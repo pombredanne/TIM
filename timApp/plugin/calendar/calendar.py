@@ -17,18 +17,14 @@ from timApp.user.user import User
 from timApp.util.get_fields import get_fields_and_users, RequestedGroups, GetFieldsAccess, FieldValue
 from utils import Missing
 
+
+# Use caseja:
+
+# Luennot + pääteohjaukset:
+
 """
 timezone: Europe/Helsinki  # oletus
-weeks:
- - 31.8.2020
- - 7.9.2020
- - 14.9.2020
- - 21.9.2020
- - 28.9.2020
-# tai kelpaa myös:
-weeks:
- from: 31.8.2020
- to: 28.9.2020
+weeks: [35-38, 40]
 weekdays:  # oletus 5 arkipäivää näkyvillä per viikko
  - mon
  - tue
@@ -36,35 +32,38 @@ weekdays:  # oletus 5 arkipäivää näkyvillä per viikko
  - thu
  - fri
 weekevents:
- - title: Luento 1
-   time: mon 10:15-12:00
-   eventgroup: luento
- - title: Luento 2
-   time: mon 10:15-12:00
-   eventgroup: luento
- - title: Pääte 1
-   time: wed 10:15-12:00
-   eventgroup: paate
-   max: 15
- - title: Pääte 2
-   time: thu 12:15-14:00
-   eventgroup: paate
-# tai ehkä:
- - [Luento 1, 'mon 10:15-12:00', {eventgroup: luento}]  # flow context vaatii hipsut '...' koska sisältää ":"
- - [Luento 2, 'tue 12:15-14:00', {eventgroup: luento}]
- - [Pääte 1, 'wed 10:15-12:00', {eventgroup: paate, max: 15}]  # vähän kömpelön näköinen
- - [Pääte 2, 'thu 12:15-14:00', {eventgroup: paate}]
+ luento:
+  - [Luento 1, 'mon 10:15-12:00']
+  - [Luento 2, 'tue 12:15-14:00', {weeks: [36, 41]}]  # oletusviikoista poikkeavat
+ paate:
+  - [Pääte 1, 'wed 10:15-12:00', {max: 15}]
+  - [Pääte 2, 'thu 12:15-14:00']
 events:  # tähän voi lisätä epäsäännöllisiä tapahtumia
- - title: Muu tapahtuma
-   time: 6.11.2020 14:00-15:00
-# tai ehkä:
  - [Muu tapahtuma, '6.11.2020 14:00-15:00']
 eventgroups:
  luento:
-  suggestAll: true  # jos yhdenkin luennon ruksii, niin ehdotetaanko, että ruksitaan kaikki
+  suggestAllInEventGroup: true  # jos yhdenkin luennon ruksii, niin ehdotetaanko, että ruksitaan kaikki
  paate:
+  suggestForEachWeek: true  # ehdotetaanko jokaisen viikon osalta saman tapahtuman ruksimista
   max: 20  # oletusmaksimiosallistujamäärä jokaiseen tämän ryhmän tapahtumaan
   maxPerPerson: 1  # yksi henkilö voi osallistua korkeintaan näin moneen tämän ryhmän tapahtumaan per viikko
+"""
+
+# Harjoitustöiden ohjausajat:
+
+"""
+weeks: [35-38, 40]
+weekevents:
+ ohjaus:
+  - [Ohjaus, 'mon 8:00-18:00', {splitToMulti: 20mins}]
+filterEvents:
+ right: view
+ deadline: 6h  # ajat varattava viimeistään 6h etukäteen
+ allowIfHasParticipant: ohj1  # näytetään view-oikeudellisille vain ne ajat, joissa on ainakin 1 ohj1-ryhmään kuuluva
+eventgroups:
+ ohjaus:
+  suggestForEachWeek: true  # ehdotetaanko jokaisen viikon osalta saman tapahtuman ruksimista
+  max: 2  # ohjaaja + opiskelija
 """
 
 
