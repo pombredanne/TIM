@@ -66,6 +66,35 @@ eventgroups:
   max: 2  # ohjaaja + opiskelija
 """
 
+# Real-world-esimerkki: Ohj1 syksy 2018 luennot ja pääteohjaukset, ks.
+# https://korppi.jyu.fi/kotka/course/student/generalCourseInfo.jsp?course=226410
+
+"""
+year: 2018
+weeks: [37-48]
+weekevents:
+ luento:
+  - [Luento 1, 'ma 12:15-14:00']
+  - [Luento 2, 'ti 14:15-16:00']
+ demo:
+  - [Demo 1, 'ma 14:15-16:00']
+  - [Demo 2, 'ma 16:05-18:00']
+ paate:
+  - [Pääte 1, 'wed 10:15-12:00', {max: 15}]
+  - [Pääte 2, 'thu 12:15-14:00']
+events:
+ - [PP-luento, '23.10.2018 16:15-18:00']
+eventgroups:
+ demo:
+  weeks: [38-48]
+ luento:
+  suggestAllInEventGroup: true  # jos yhdenkin luennon ruksii, niin ehdotetaanko, että ruksitaan kaikki
+ paate:
+  suggestForEachWeek: true  # ehdotetaanko jokaisen viikon osalta saman tapahtuman ruksimista
+  max: 20  # oletusmaksimiosallistujamäärä jokaiseen tämän ryhmän tapahtumaan
+  maxPerPerson: 1  # yksi henkilö voi osallistua korkeintaan näin moneen tämän ryhmän tapahtumaan per viikko
+"""
+
 
 @dataclass
 class CalendarMarkupModel:
