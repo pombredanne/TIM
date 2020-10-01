@@ -71,28 +71,124 @@ eventgroups:
 
 """
 year: 2018
-weeks: [37-48]
+startHourMinuteOffset: 15
 weekevents:
  luento:
-  - [Luento 1, 'ma 12:15-14:00']
-  - [Luento 2, 'ti 14:15-16:00']
+  - [Luento 1, ma 12-14]
+  - [Luento 2, ti 14-16]
  demo:
-  - [Demo 1, 'ma 14:15-16:00']
-  - [Demo 2, 'ma 16:05-18:00']
+  - [Demo 1, ma 14-16]
+  - [Demo 2, 'ma 16:05-18', {excepts: [{weeks: 38, time: ma 16-18}]}]
+  - [Demo vain netti, 'ma 11:00-11:05']
  paate:
-  - [Pääte 1, 'wed 10:15-12:00', {max: 15}]
-  - [Pääte 2, 'thu 12:15-14:00']
+  - [Ryhmä 1.1, ke 08-10]
+  - [Ryhmä 1.2, ke 08-10, {weeks: 37-50}]
+  - [Ryhmä 1.3, ke 08-10, {weeks: 37-40}]
+  - [Ryhmä 2.1, ke 10-12]
+  - [Ryhmä 2.2, ke 10-12, {weeks: 37-50}]
+  - [Ryhmä 2.3, ke 10-12, {weeks: 37-41}]
+  - [Ryhmä 3.1, ke 12-14]
+  - [Ryhmä 3.2, ke 12-14, {weeks: 37-50}]
+  - [Ryhmä 3.3, ke 12-14, {weeks: 37-41}]
+  - [Ryhmä 4.1, ke 08-10]
+  - [Ryhmä 4.2, ke 08-10, {weeks: 37-50}]
+  - [Ryhmä 5.1, to 10-12, {excepts: [{weeks: 43, time: 'to 08-09:30'}]}]
+  - [Ryhmä 5.2, to 10-12, {weeks: 37-50, excepts: [{weeks: 43, time: 'to 08-09:30'}, {weeks: 48-49, time: pe 10-12}]}]
+  - [Ryhmä 5.3, to 10-12, {weeks: 37-41}]
+  - [Ryhmä 6.1, to 12-14, {excepts: [{weeks: 43, time: to 14-16}]}]
+  - [Ryhmä 6.2, to 12-14, {weeks: 37-50, excepts: [{weeks: 43, time: to 14-16}, {weeks: 48-49, time: pe 12-14}]}]
+  - [Ryhmä 7.1, to 14-16]
+  - [Ryhmä 7.2, to 14-16, {weeks: 37-50, excepts: [{weeks: 48-49, time: pe 14-16}]}]
+  - [Ryhmä 8.1, to 16-18]
+  - [Ryhmä 9.1, pe 14-16]
+  - [Ryhmä 9.2, pe 14-16, {weeks: 37-50}]
+  - [Ryhmä 9.3, pe 14-16, {weeks: 37-41}]
+ pp:
+  - [PahastiPihalla 1, pe 10-14]
+  - [PahastiPihalla 2, pe 10-14]
+  - [PahastiPihalla 3, ke 16-18', excepts: [{weeks: 49-50, time: pe 16-18}]]
+ htnaytto46:
+  - [HT-näyttö 2, ke 10-12]
+  - [HT-näyttö 6, to 12-14]
+  - [HT-näyttö 7, to 14-16]
+  - [HT-näyttö 9, pe 14-16]
+ htnaytto47:
+  - [HT-näyttö 2.2, ke 10-12]
+  - [HT-näyttö 3,   ke 12-14]
+  - [HT-näyttö 6.2, to 12-14]
+  - [HT-näyttö 7.2, to 14-16]
+  - [HT-näyttö 10,  pe 14-16]
+ htnaytto48:
+  - [HT-näyttö 1,   'ke 08:30-10']
+  - [HT-näyttö 2.3, ke 10-12]
+  - [HT-näyttö 3.2, ke 12-14]
+  - [HT-näyttö 4,   ke 14-16]
+  - [HT-näyttö 5,   pe 10-12]
+  - [HT-näyttö 6.3, pe 12-14]
+  - [HT-näyttö 7.3, pe 14-16]
+ htnaytto49:
+  - [HT-näyttö 10.2, ti 10-12]
+  - [HT-näyttö 11,   ti 10-12]
+  - [HT-näyttö 12,   ti 12-14]
+  - [HT-näyttö 13,   ti 14-16]
+  - [HT-näyttö 23,   ke 10-12]
+  - [HT-näyttö 24,   ke 12-14]
+  - [HT-näyttö 25,   ke 14-16]
+  - [HT-näyttö 26,   ke 16-18]
+  - [HT-näyttö 27,   pe 14-16]
+ htnaytto50:
+  - [HT-näyttö 14, ti 10-12]
+  - [HT-näyttö 15, ti 12-14]
+  - [HT-näyttö 16, ti 14-16]
+  - [HT-näyttö 17, ti 16-18]
+  - [HT-näyttö 18, ma 14-16]
+  - [HT-näyttö 28, ke 10-12]
+  - [HT-näyttö 29, ke 10-12]
+  - [HT-näyttö 30, ke 12-14]
+  - [HT-näyttö 31, ke 14-16]
+  - [HT-näyttö 32, to 10-12]
+  - [HT-näyttö 33, to 12-14]
+  - [HT-näyttö 34, to 14-16]
+  - [HT-näyttö 35, to 16-18]
+  - [HT-näyttö 36, pe 14-16]
+  - [HT-näyttö 37, pe 12-14]
+ htnaytto51:
+  - [HT-näyttö 38, ti 10-12]
+  - [HT-näyttö 39, ti 12-14]
+  - [HT-näyttö 40, to 10-12]
+  - [HT-näyttö 41, to 12-14]
 events:
- - [PP-luento, '23.10.2018 16:15-18:00']
+ - [PP-luento, ti 16-18, {weeks: 43}]
 eventgroups:
- demo:
-  weeks: [38-48]
  luento:
-  suggestAllInEventGroup: true  # jos yhdenkin luennon ruksii, niin ehdotetaanko, että ruksitaan kaikki
+  weeks: 37-48
+  suggestAllInEventGroup: true
+ demo:
+  weeks: 38-48
+  suggestForEachWeek: true
  paate:
-  suggestForEachWeek: true  # ehdotetaanko jokaisen viikon osalta saman tapahtuman ruksimista
-  max: 20  # oletusmaksimiosallistujamäärä jokaiseen tämän ryhmän tapahtumaan
-  maxPerPerson: 1  # yksi henkilö voi osallistua korkeintaan näin moneen tämän ryhmän tapahtumaan per viikko
+  weeks: 37-47
+  suggestForEachWeek: true
+  max: 20
+  maxPerPerson: 1
+ pp:
+  weeks: 39-50
+  max: 20
+ htnaytto*:
+  min: 5
+  max: 15
+ htnaytto46:
+  weeks: 46
+ htnaytto47:
+  weeks: 47
+ htnaytto48:
+  weeks: 48
+ htnaytto49:
+  weeks: 49
+ htnaytto50:
+  weeks: 50
+ htnaytto51:
+  weeks: 51
 """
 
 
