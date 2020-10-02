@@ -55,7 +55,7 @@ eventgroups:
 weeks: [35-38, 40]
 weekevents:
  ohjaus:
-  - [Ohjaus, 'mon 8:00-18:00', {splitToMulti: 20mins}]
+  - [Ohjaus, mon 8-18, {splitToMulti: 20mins}]
 filterEvents:
  right: view
  deadline: 6h  # ajat varattava viimeistään 6h etukäteen
@@ -106,7 +106,7 @@ weekevents:
  pp:
   - [PahastiPihalla 1, pe 10-14]
   - [PahastiPihalla 2, pe 10-14]
-  - [PahastiPihalla 3, ke 16-18', excepts: [{weeks: 49-50, time: pe 16-18}]]
+  - [PahastiPihalla 3, ke 16-18, excepts: [{weeks: 49-50, time: pe 16-18}]]
  htnaytto46:
   - [HT-näyttö 2, ke 10-12]
   - [HT-näyttö 6, to 12-14]
@@ -189,6 +189,23 @@ eventgroups:
   weeks: 50
  htnaytto51:
   weeks: 51
+"""
+
+# jos varaukset tallentuu answereihin:
+"""
+{"reservations": [["2018-10-01T10:00", "2018-10-01T10:20"], ...]}
+"""
+
+
+"""
+# CalendarEvent
+
+id (int) | doc_id (int) | time (tstzrange) | user_id (int) | name (string) | max (int, nullable)
+
+# CalendarEventRegistration
+
+event_id (int) | user_id (int) | created (timestamp) | canceled (bool)
+
 """
 
 
