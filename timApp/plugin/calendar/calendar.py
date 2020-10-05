@@ -72,62 +72,60 @@ eventgroups:
 """
 year: 2018
 startHourMinuteOffset: 15
+usePreviousByDefault: [weeks]
 weekevents:
  luento:
   - [Luento 1, ma 12-14]
   - [Luento 2, ti 14-16]
  demo:
   - [Demo 1, ma 14-16]
-  - [Demo 2, 'ma 16:05-18', {excepts: [{weeks: 38, time: ma 16-18}]}]
-  - [Demo vain netti, 'ma 11:00-11:05']
+  - [Demo 2, ma 16.05-18, {excepts: [{weeks: 38, time: ma 16-18}]}]
+  - [Demo vain netti, ma 11.00-11.05, {place: -}]
  paate:
-  - [Ryhmä 1.1, ke 08-10]
-  - [Ryhmä 1.2, ke 08-10, {weeks: 37-50}]
-  - [Ryhmä 1.3, ke 08-10, {weeks: 37-40}]
-  - [Ryhmä 2.1, ke 10-12]
-  - [Ryhmä 2.2, ke 10-12, {weeks: 37-50}]
-  - [Ryhmä 2.3, ke 10-12, {weeks: 37-41}]
-  - [Ryhmä 3.1, ke 12-14]
-  - [Ryhmä 3.2, ke 12-14, {weeks: 37-50}]
-  - [Ryhmä 3.3, ke 12-14, {weeks: 37-41}]
-  - [Ryhmä 4.1, ke 08-10]
-  - [Ryhmä 4.2, ke 08-10, {weeks: 37-50}]
-  - [Ryhmä 5.1, to 10-12, {excepts: [{weeks: 43, time: 'to 08-09:30'}]}]
-  - [Ryhmä 5.2, to 10-12, {weeks: 37-50, excepts: [{weeks: 43, time: 'to 08-09:30'}, {weeks: 48-49, time: pe 10-12}]}]
-  - [Ryhmä 5.3, to 10-12, {weeks: 37-41}]
-  - [Ryhmä 6.1, to 12-14, {excepts: [{weeks: 43, time: to 14-16}]}]
-  - [Ryhmä 6.2, to 12-14, {weeks: 37-50, excepts: [{weeks: 43, time: to 14-16}, {weeks: 48-49, time: pe 12-14}]}]
-  - [Ryhmä 7.1, to 14-16]
-  - [Ryhmä 7.2, to 14-16, {weeks: 37-50, excepts: [{weeks: 48-49, time: pe 14-16}]}]
-  - [Ryhmä 8.1, to 16-18]
-  - [Ryhmä 9.1, pe 14-16]
-  - [Ryhmä 9.2, pe 14-16, {weeks: 37-50}]
-  - [Ryhmä 9.3, pe 14-16, {weeks: 37-41}]
+  - [Ryhmä 1.1, ke 08-10, {weeks: 37-47, place: Ag B212.2, excepts: [{weeks: 42, place: Ag B213.1}]}]
+  - [Ryhmä 1.2, ke 08-10, {weeks: 37-50, place: Ag B213.1, excepts: [{weeks: 42, place: Ag B212.2}]}]
+  - [Ryhmä 1.3, ke 08-10, {weeks: 37-40, place: Ag B212.1}]
+  - [Ryhmä 2.1, ke 10-12, {weeks: 37-47, place: Ag B212.2, excepts: [{weeks: 42, place: Ag B213.1}]}]
+  - [Ryhmä 2.2, ke 10-12, {weeks: 37-50, place: Ag B213.1, excepts: [{weeks: 42, place: Ag B212.2}]}]
+  - [Ryhmä 2.3, ke 10-12, {weeks: 37-41, place: Ag B212.1}]
+  - [Ryhmä 3.1, ke 12-14, {weeks: 37-47, place: Ag B212.2}]
+  - [Ryhmä 3.2, ke 12-14, {weeks: 37-50, place: Ag B213.1}]
+  - [Ryhmä 3.3, ke 12-14, {weeks: 37-41, place: Ag B212.1}]
+  - [Ryhmä 4.1, ke 08-10, {weeks: 37-47, place: Ag B212.2}]
+  - [Ryhmä 4.2, ke 08-10, {weeks: 37-50, place: Ag B213.1}]
+  - [Ryhmä 5.1, to 10-12, {weeks: 37-47, place: Ag B212.2, excepts: [{weeks: 39, place: Ag B213.1}, {weeks: 43, time: to 08-09.30}]}]
+  - [Ryhmä 5.2, to 10-12, {weeks: 37-50, place: Ag B213.1, excepts: [{weeks: 39, place: Ag B212.2}, {weeks: 43, time: to 08-09.30}, {weeks: 48-49, time: pe 10-12, place: Ag B212.1}]}]
+  - [Ryhmä 5.3, to 10-12, {weeks: 37-41, place: Ag B212.1}]
+  - [Ryhmä 6.1, to 12-14, {weeks: 37-47, place: Ag B212.2, excepts: [{weeks: 43, time: to 14-16}]}]
+  - [Ryhmä 6.2, to 12-14, {weeks: 37-50, place: Ag B213.1, excepts: [{weeks: 43, time: to 14-16}, {weeks: 48-49, time: pe 12-14, place: Ag B212.1}]}]
+  - [Ryhmä 7.1, to 14-16, {weeks: 37-47, place: Ag B212.2, excepts: [{weeks: 39, place: Ag B213.1}]}]
+  - [Ryhmä 7.2, to 14-16, {weeks: 37-50, place: Ag B213.1, excepts: [{weeks: 39, place: Ag B212.2}, {weeks: 48-49, time: pe 14-16, place: Ag B212.1}]}]
+  - [Ryhmä 8.1, to 16-18, {weeks: 37-47, place: Ag B212.2}]
+  - [Ryhmä 9.1, pe 14-16, {weeks: 37-47, place: Ag B211.1, excepts: [{weeks: 43, place: Ag B212.2}]}]
+  - [Ryhmä 9.2, pe 14-16, {weeks: 37-50, place: Ag B212.1, excepts: [{weeks: 43, place: Ag B213.1}, {weeks: 49, place: Ag B212.2}]}]
+  - [Ryhmä 9.3, pe 14-16, {weeks: 37-41, place: Ag B212.2}]
  pp:
-  - [PahastiPihalla 1, pe 10-14]
-  - [PahastiPihalla 2, pe 10-14]
-  - [PahastiPihalla 3, ke 16-18, excepts: [{weeks: 49-50, time: pe 16-18}]]
- htnaytto46:
-  - [HT-näyttö 2, ke 10-12]
-  - [HT-näyttö 6, to 12-14]
-  - [HT-näyttö 7, to 14-16]
-  - [HT-näyttö 9, pe 14-16]
- htnaytto47:
-  - [HT-näyttö 2.2, ke 10-12]
-  - [HT-näyttö 3,   ke 12-14]
-  - [HT-näyttö 6.2, to 12-14]
-  - [HT-näyttö 7.2, to 14-16]
-  - [HT-näyttö 10,  pe 14-16]
- htnaytto48:
-  - [HT-näyttö 1,   'ke 08:30-10']
-  - [HT-näyttö 2.3, ke 10-12]
-  - [HT-näyttö 3.2, ke 12-14]
-  - [HT-näyttö 4,   ke 14-16]
-  - [HT-näyttö 5,   pe 10-12]
-  - [HT-näyttö 6.3, pe 12-14]
-  - [HT-näyttö 7.3, pe 14-16]
- htnaytto49:
-  - [HT-näyttö 10.2, ti 10-12]
+  - [PahastiPihalla 1, pe 10-14, {place: Ag B212.2}]
+  - [PahastiPihalla 2, pe 10-14, {place: Ag B213.1}]
+  - [PahastiPihalla 3, ke 16-18, {place: Ag B212.2, excepts: [{weeks: 49-50, time: pe 16-18}]}]
+ htnaytto:
+  - [HT-näyttö 2,    ke 10-12, {weeks: 46, place: Ag B212.1}]
+  - [HT-näyttö 6,    to 12-14, {place: Ag B113.1}]
+  - [HT-näyttö 7,    to 14-16, {place: Ag B113.1}]
+  - [HT-näyttö 9,    pe 14-16]
+  - [HT-näyttö 2.2,  ke 10-12, {weeks: 47, place: Ag B212.1}]
+  - [HT-näyttö 3,    ke 12-14]
+  - [HT-näyttö 6.2,  to 12-14, {place: Ag B113.1}]
+  - [HT-näyttö 7.2,  to 14-16]
+  - [HT-näyttö 10,   pe 14-16]
+  - [HT-näyttö 1,    ke 08.30-10, {weeks: 48}]
+  - [HT-näyttö 2.3,  ke 10-12]
+  - [HT-näyttö 3.2,  ke 12-14]
+  - [HT-näyttö 4,    ke 14-16]
+  - [HT-näyttö 5,    pe 10-12]
+  - [HT-näyttö 6.3,  pe 12-14]
+  - [HT-näyttö 7.3,  pe 14-16]
+  - [HT-näyttö 10.2, ti 10-12, {weeks: 49}]
   - [HT-näyttö 11,   ti 10-12]
   - [HT-näyttö 12,   ti 12-14]
   - [HT-näyttö 13,   ti 14-16]
@@ -135,37 +133,37 @@ weekevents:
   - [HT-näyttö 24,   ke 12-14]
   - [HT-näyttö 25,   ke 14-16]
   - [HT-näyttö 26,   ke 16-18]
-  - [HT-näyttö 27,   pe 14-16]
- htnaytto50:
-  - [HT-näyttö 14, ti 10-12]
-  - [HT-näyttö 15, ti 12-14]
-  - [HT-näyttö 16, ti 14-16]
-  - [HT-näyttö 17, ti 16-18]
-  - [HT-näyttö 18, ma 14-16]
-  - [HT-näyttö 28, ke 10-12]
-  - [HT-näyttö 29, ke 10-12]
-  - [HT-näyttö 30, ke 12-14]
-  - [HT-näyttö 31, ke 14-16]
-  - [HT-näyttö 32, to 10-12]
-  - [HT-näyttö 33, to 12-14]
-  - [HT-näyttö 34, to 14-16]
-  - [HT-näyttö 35, to 16-18]
-  - [HT-näyttö 36, pe 14-16]
-  - [HT-näyttö 37, pe 12-14]
- htnaytto51:
-  - [HT-näyttö 38, ti 10-12]
-  - [HT-näyttö 39, ti 12-14]
-  - [HT-näyttö 40, to 10-12]
-  - [HT-näyttö 41, to 12-14]
+  - [HT-näyttö 27,   pe 14-16, {place: Ag B211.1}]
+  - [HT-näyttö 14,   ti 10-12, {weeks: 50, place: Ag C331.3}]
+  - [HT-näyttö 15,   ti 12-14]
+  - [HT-näyttö 16,   ti 14-16, {place: Ag C331.3}]
+  - [HT-näyttö 17,   ti 16-18]
+  - [HT-näyttö 18,   ma 14-16]
+  - [HT-näyttö 28,   ke 10-12]
+  - [HT-näyttö 29,   ke 10-12]
+  - [HT-näyttö 30,   ke 12-14]
+  - [HT-näyttö 31,   ke 14-16, {place: Ag B212.1}]
+  - [HT-näyttö 32,   to 10-12]
+  - [HT-näyttö 33,   to 12-14]
+  - [HT-näyttö 34,   to 14-16]
+  - [HT-näyttö 35,   to 16-18]
+  - [HT-näyttö 36,   pe 14-16]
+  - [HT-näyttö 37,   pe 12-14, {place: Ag B212.1}]
+  - [HT-näyttö 38,   ti 10-12, {weeks: 51}]
+  - [HT-näyttö 39,   ti 12-14]
+  - [HT-näyttö 40,   to 10-12]
+  - [HT-näyttö 41,   to 12-14]
 events:
- - [PP-luento, ti 16-18, {weeks: 43}]
+ - [PP-luento, ti 16-18, {weeks: 43, place: Ag C221}]
 eventgroups:
  luento:
   weeks: 37-48
   suggestAllInEventGroup: true
+  place: Ag Auditorio 3
  demo:
   weeks: 38-48
   suggestForEachWeek: true
+  place: Ag Auditorio 3
  paate:
   weeks: 37-47
   suggestForEachWeek: true
@@ -174,21 +172,10 @@ eventgroups:
  pp:
   weeks: 39-50
   max: 20
- htnaytto*:
+ htnaytto:
   min: 5
   max: 15
- htnaytto46:
-  weeks: 46
- htnaytto47:
-  weeks: 47
- htnaytto48:
-  weeks: 48
- htnaytto49:
-  weeks: 49
- htnaytto50:
-  weeks: 50
- htnaytto51:
-  weeks: 51
+  place: Ag B212.2
 """
 
 # jos varaukset tallentuu answereihin:
