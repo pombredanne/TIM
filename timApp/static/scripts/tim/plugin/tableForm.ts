@@ -26,6 +26,7 @@ import {platformBrowserDynamic} from "@angular/platform-browser-dynamic";
 import {AngularPluginBase} from "tim/plugin/angular-plugin-base.directive";
 import {vctrlInstance} from "tim/document/viewctrlinstance";
 import {TaskId} from "tim/plugin/taskid";
+import {DataTableTestModule} from "tim/plugin/datatable-test/data-table-test.component";
 import {showInputDialog} from "tim/ui/showInputDialog";
 import {InputDialogKind} from "tim/ui/input-dialog.kind";
 import {ViewCtrl} from "../document/viewctrl";
@@ -181,7 +182,7 @@ const sortLang = "fi";
                 <label title="Send also a copy for me"><input type="checkbox" [(ngModel)]="emailbccme">BCC also
                     for me</label>&nbsp;
                 <label title="Send using TIM. Every mail is sent as a personal mail."><input type="checkbox"
-                                                                                              [(ngModel)]="emailtim">use
+                                                                                             [(ngModel)]="emailtim">use
                     TIM to send</label>&nbsp;
             </p>
             <p>Subject: <input [(ngModel)]="emailsubject" size="60"></p>
@@ -268,8 +269,11 @@ export class TimEmailComponent {
             <tim-markup-error *ngIf="markupError" [data]="markupError"></tim-markup-error>
             <h4 *ngIf="header" [innerHtml]="header"></h4>
             <p *ngIf="stem" [innerHtml]="stem"></p>
-            <tim-table *ngIf="tableCheck()" [data]="data"
-                       [taskid]="getTaskId()"></tim-table>
+            <ng-container *ngIf="tableCheck()">
+                <tim-table *ngIf="!isDataView" [data]="data"
+                           [taskid]="getTaskId()"></tim-table>
+                <tim-data-table-test *ngIf="isDataView" [data]="data"></tim-data-table-test>
+            </ng-container>
 
             <div class="hidden-print">
                 <button class="timButton"
@@ -356,7 +360,8 @@ export class TimEmailComponent {
                     [disabled]="loading"
                     (click)="openTable()">
                 {{openButtonText}}
-            </button><tim-loading *ngIf="loading"></tim-loading>
+            </button>
+            <tim-loading *ngIf="loading"></tim-loading>
         </div>
     `,
     styleUrls: ["./tableForm.scss"],
@@ -371,7 +376,6 @@ export class TableFormComponent
     public viewctrl?: ViewCtrl;
     result?: string;
     error?: string;
-    private userfilter = "";
     data: TimTable & {userdata: DataEntity} = {
         hide: {edit: false, insertMenu: true, editMenu: true},
         hiddenRows: [],
@@ -388,6 +392,19 @@ export class TableFormComponent
         isPreview: false,
         // saveCallBack: this.singleCellSave
     };
+    showTable = false;
+    runScripts?: RunScriptType[];
+    userlist: string = "";
+    listSep: string = "-";
+    listName: boolean = false;
+    listUsername: boolean = true;
+    listEmail: boolean = false;
+    cbCount: number = 0;
+    @ViewChild(TimTableComponent)
+    timTable?: TimTableComponent;
+    emaillist = "";
+    loading = false;
+    private userfilter = "";
     // TODO: Change row format to properly typed format (maybe userobject:IRowstype) format
     private rows!: IRowsType;
     private styles?: t.TypeOf<typeof Styles>;
@@ -400,30 +417,27 @@ export class TableFormComponent
     private realnames = false;
     private usernames = false;
     private emails = false;
-    showTable = false;
     private tableFetched = false;
     private rowKeys!: string[];
     private userLocations: Record<string, string> = {};
     private taskLocations: Record<string, string> = {};
     private changedCells: string[] = []; // Use same type as data.userdata?
     private clearStylesCells = new Set<string>();
-
-    runScripts?: RunScriptType[];
-
-    userlist: string = "";
-    listSep: string = "-";
-    listName: boolean = false;
-    listUsername: boolean = true;
-    listEmail: boolean = false;
     private fixedColor: string = "#f0f0f0";
-    cbCount: number = 0;
-    @ViewChild(TimTableComponent)
-    timTable?: TimTableComponent;
-    emaillist = "";
-    loading = false;
 
-    getDefaultMarkup() {
-        return {};
+    // noinspection JSUnusedLocalSymbols
+    constructor(
+        el: ElementRef,
+        http: HttpClient,
+        domSanitizer: DomSanitizer,
+        private cdr: ChangeDetectorRef
+    ) {
+        super(el, http, domSanitizer);
+        // cdr.detach();
+    }
+
+    get isDataView() {
+        return !!this.markup.dataView;
     }
 
     get autosave() {
@@ -463,6 +477,40 @@ export class TableFormComponent
     }
 
     /**
+     * Make list of users colIndex.  Separate items by separators
+     * @param users array of users
+     * @param colIndex what index to use for list
+     * @param preseparator what comes before evyry item
+     * @param midseparator what comes between items
+     */
+    static makeUserList(
+        users: string[][],
+        colIndex: number,
+        preseparator: string,
+        midseparator: string
+    ): string {
+        let result = "";
+        let sep = "";
+        for (const r of users) {
+            result += sep + preseparator + r[colIndex];
+            sep = midseparator;
+        }
+        return result;
+    }
+
+    static makeUserArray(users: string[][], colIndex: number): string[] {
+        const result = [];
+        for (const r of users) {
+            result.push(r[colIndex]);
+        }
+        return result;
+    }
+
+    getDefaultMarkup() {
+        return {};
+    }
+
+    /**
      * Used to define table view & relative save button in angular, true or false.
      */
     buttonText() {
@@ -494,17 +542,6 @@ export class TableFormComponent
 
         this.addHiddenIndex(i);
         return false;
-    }
-
-    // noinspection JSUnusedLocalSymbols
-    constructor(
-        el: ElementRef,
-        http: HttpClient,
-        domSanitizer: DomSanitizer,
-        private cdr: ChangeDetectorRef
-    ) {
-        super(el, http, domSanitizer);
-        // cdr.detach();
     }
 
     parseRunScripts(
@@ -733,6 +770,7 @@ export class TableFormComponent
         if (this.attrsall.markup.sisugroups) {
             return;
         }
+
         // TODO: Save before reset?
         interface TableFetchResponse {
             aliases: Record<string, string>;
@@ -743,6 +781,7 @@ export class TableFormComponent
             rows: IRowsType;
             styles: t.TypeOf<typeof Styles>;
         }
+
         let prom;
         const tid = this.getTaskId();
         if (!tid) {
@@ -791,14 +830,6 @@ export class TableFormComponent
             this.data.userdata.cells = {};
             this.setDataMatrix();
             this.reinitializeTimTable();
-        }
-    }
-
-    private reinitializeTimTable() {
-        const timtab = this.getTimTable();
-        if (timtab) {
-            timtab.reInitialize(ClearSort.No);
-            timtab.c();
         }
     }
 
@@ -1148,36 +1179,6 @@ export class TableFormComponent
         if (win == null) {
             this.error = "Failed to open report window.";
         }
-    }
-
-    /**
-     * Make list of users colIndex.  Separate items by separators
-     * @param users array of users
-     * @param colIndex what index to use for list
-     * @param preseparator what comes before evyry item
-     * @param midseparator what comes between items
-     */
-    static makeUserList(
-        users: string[][],
-        colIndex: number,
-        preseparator: string,
-        midseparator: string
-    ): string {
-        let result = "";
-        let sep = "";
-        for (const r of users) {
-            result += sep + preseparator + r[colIndex];
-            sep = midseparator;
-        }
-        return result;
-    }
-
-    static makeUserArray(users: string[][], colIndex: number): string[] {
-        const result = [];
-        for (const r of users) {
-            result.push(r[colIndex]);
-        }
-        return result;
     }
 
     /**
@@ -1629,6 +1630,14 @@ export class TableFormComponent
     getAttributeType() {
         return TableFormAll;
     }
+
+    private reinitializeTimTable() {
+        const timtab = this.getTimTable();
+        if (timtab) {
+            timtab.reInitialize(ClearSort.No);
+            timtab.c();
+        }
+    }
 }
 
 @NgModule({
@@ -1639,6 +1648,7 @@ export class TableFormComponent
         FormsModule,
         TimUtilityModule,
         TimTableModule,
+        DataTableTestModule,
     ],
 })
 export class TableFormModule implements DoBootstrap {

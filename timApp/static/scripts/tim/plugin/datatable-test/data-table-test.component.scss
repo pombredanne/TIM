@@ -1,0 +1,9 @@
+::ng-deep datatable-header-cell {
+  border: 1px solid #ddd;
+  font-weight: bold;
+  user-select: none;
+}
+
+::ng-deep .ngx-datatable.scroll-vertical {
+  height: 70vh;
+}
