@@ -11,11 +11,16 @@ type TableData = TimTable;
     template: `
         <ngx-datatable [rows]="rows" [scrollbarV]="true" columnMode="force" [scrollbarH]="false" [rowHeight]="30">
             <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop"
-                                  [headerTemplate]="hdrCell" [canAutoResize]="true"></ngx-datatable-column>
+                                  [headerTemplate]="hdrCell" [cellTemplate]="mainCell" [canAutoResize]="true"></ngx-datatable-column>
         </ngx-datatable>
 
         <ng-template #hdrCell let-column="column">
             <div class="draggable" [style]="headersStyle">{{column.name}}</div>
+        </ng-template>
+        <ng-template #mainCell let-value="value" let-rowIndex="rowIndex" let-rowHeight="rowHeight">
+            <div style="background-color: yellow;" [style.height]="rowHeight + 'px'">
+                <span>{{value}}</span>
+            </div>
         </ng-template>
     `,
     styleUrls: ["./data-table-test.component.scss"],
