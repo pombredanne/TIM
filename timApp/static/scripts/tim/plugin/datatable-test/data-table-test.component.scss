@@ -1,5 +1,5 @@
 ::ng-deep datatable-header-cell {
-  border: 1px solid #ddd;
+  border: 1px solid var(--table-border-color);
   font-weight: bold;
   user-select: none;
 }

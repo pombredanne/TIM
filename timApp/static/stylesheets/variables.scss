@@ -82,6 +82,8 @@ $pre-bg: inherit;
 $font-family-sans-serif: exportable((Verdana, Arial, sans-serif), font-family-sans-serif);  // likely of interest for custom CSS
 $icon-font-path: "/js/bootstrap-fonts/";
 $label-visited-color: white;
+$table-border-color: exportable(#ddd, table-border-color);
+$table-bg: exportable(transparent, table-bg);
 
 $score-menu-link-color: $link-color;
 $score-menu-link-visited-color: $link-visited-color;
