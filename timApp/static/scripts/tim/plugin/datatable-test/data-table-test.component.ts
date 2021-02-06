@@ -9,14 +9,13 @@ type TableData = TimTable;
 @Component({
     selector: "tim-data-table-test",
     template: `
-        <ngx-datatable [rows]="rows" [scrollbarV]="true" columnMode="force" [scrollbarH]="false" [rowHeight]="50"
-                       [headerHeight]="50">
+        <ngx-datatable [rows]="rows" [scrollbarV]="true" columnMode="force" [scrollbarH]="false" [rowHeight]="30">
             <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop"
                                   [headerTemplate]="hdrCell" [canAutoResize]="true"></ngx-datatable-column>
         </ngx-datatable>
 
         <ng-template #hdrCell let-column="column">
-            <div [style]="headersStyle">{{column.name}}</div>
+            <div class="draggable" [style]="headersStyle">{{column.name}}</div>
         </ng-template>
     `,
     styleUrls: ["./data-table-test.component.scss"],

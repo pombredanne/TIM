@@ -1,9 +1,21 @@
-::ng-deep datatable-header-cell {
-  border: 1px solid var(--table-border-color);
-  font-weight: bold;
-  user-select: none;
-}
+:host ::ng-deep .ngx-datatable {
+    .datatable-header-cell {
+        border: 1px solid var(--table-border-color);
+        font-weight: bold;
+        user-select: none;
+    }
 
-::ng-deep .ngx-datatable.scroll-vertical {
-  height: 70vh;
+    &.scroll-vertical {
+        height: 70vh;
+    }
+
+    .datatable-body-cell {
+        border: 1px solid var(--table-border-color);
+        border-top-width: 0;
+        border-right-width: 0;
+    }
+
+    .datatable-body-cell:last-child {
+        border-right-width: 1px;
+    }
 }
