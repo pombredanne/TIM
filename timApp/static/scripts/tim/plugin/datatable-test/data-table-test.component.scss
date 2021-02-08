@@ -6,6 +6,7 @@
   }
 
   .datatable-header {
+    // Needed because for some reason `inline` prevents scrolling on Chrome
     display: inline-block;
   }
 
