@@ -1,21 +1,25 @@
 :host ::ng-deep .ngx-datatable {
-    .datatable-header-cell {
-        border: 1px solid var(--table-border-color);
-        font-weight: bold;
-        user-select: none;
-    }
+  .datatable-header-cell {
+    border: 1px solid var(--table-border-color);
+    font-weight: bold;
+    user-select: none;
+  }
 
-    &.scroll-vertical {
-        height: 70vh;
-    }
+  .datatable-header {
+    display: inline-block;
+  }
 
-    .datatable-body-cell {
-        border: 1px solid var(--table-border-color);
-        border-top-width: 0;
-        border-right-width: 0;
-    }
+  &.scroll-vertical {
+    height: 70vh;
+  }
 
-    .datatable-body-cell:last-child {
-        border-right-width: 1px;
-    }
+  .datatable-body-cell {
+    border: 1px solid var(--table-border-color);
+    border-top-width: 0;
+    border-right-width: 0;
+  }
+
+  .datatable-body-cell:last-child {
+    border-right-width: 1px;
+  }
 }
