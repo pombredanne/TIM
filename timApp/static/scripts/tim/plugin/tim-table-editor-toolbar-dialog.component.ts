@@ -5,7 +5,7 @@ import {TimUtilityModule} from "tim/ui/tim-utility.module";
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
 import {BsDropdownModule} from "ngx-bootstrap/dropdown";
-import {HideValues, IToolbarTemplate, TimTableComponent} from "./timTable";
+import {HideValues, IToolbarTemplate, TimTableComponent} from "./timtable/timTable";
 import {setToolbarInstance} from "./toolbarUtils";
 
 export interface ITimTableToolbarCallbacks {
