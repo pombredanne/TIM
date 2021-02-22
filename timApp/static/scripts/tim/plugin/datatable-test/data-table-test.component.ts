@@ -1,16 +1,25 @@
-import {Component, Input, NgModule, OnInit} from "@angular/core";
+import {Component, Injectable, Input, NgModule, OnInit} from "@angular/core";
 import {NgxDatatableModule} from "@swimlane/ngx-datatable";
 import {CommonModule} from "@angular/common";
-import {isPrimitiveCell, TimTable} from "tim/plugin/timTable";
-import {colnumToLetters} from "../timTable";
+import {isPrimitiveCell, TimTable} from "tim/plugin/timtable/timTable";
+import {ICell, ITimTableView} from "tim/plugin/timtable/data";
+import {WithStyleUtils} from "tim/plugin/timtable/styleUtils";
+import {colnumToLetters} from "../timtable/timTable";
 
-type TableData = TimTable;
+@Injectable()
+class DataTableBase implements ITimTableView {
+    cellDataMatrix!: ICell[][];
+    @Input() data!: TimTable;
+    rowStyleCache!: Map<number, Record<string, string>>;
+}
+
+const DataTable = WithStyleUtils(DataTableBase);
 
 @Component({
     selector: "tim-data-table-test",
     template: `
         <div>
-            <ngx-datatable [rows]="rows" [scrollbarV]="true" columnMode="standard" [rowHeight]="30" [footerHeight]="0"
+            <ngx-datatable [style]="tableStyle" [rows]="rows" [scrollbarV]="true" columnMode="standard" [rowHeight]="30" [footerHeight]="0"
                            [headerHeight]="30">
                 <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop"
                                       [width]="300"
@@ -28,20 +37,19 @@ type TableData = TimTable;
         </ng-template>
     `,
     styleUrls: ["./data-table-test.component.scss"],
+    inputs: ["data"],
 })
-export class DataTableTestComponent implements OnInit {
-    /**
-     * Table data that's compatible with TimTable format
-     */
-    @Input() data?: TableData;
-
+export class DataTableTestComponent
+    extends DataTable
+    implements OnInit, ITimTableView {
     rows: Record<string, unknown>[] = [];
-
     columns: {name: string; prop: number}[] = [];
-
     headersStyle?: Record<string, string> = {};
+    tableStyle: Record<string, string> = {};
 
-    constructor() {}
+    constructor() {
+        super();
+    }
 
     ngOnInit(): void {
         this.initFromTimTableData();
@@ -51,6 +59,8 @@ export class DataTableTestComponent implements OnInit {
         if (!this.data) {
             return;
         }
+
+        this.tableStyle = this.stylingForTable(this.data.table);
 
         if (!this.data.headers) {
             return;
