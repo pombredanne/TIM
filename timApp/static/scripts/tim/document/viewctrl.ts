@@ -48,7 +48,7 @@ import {
 } from "../plugin/attributes";
 import {TableFormComponent} from "../plugin/tableForm";
 import {DocIdDotName, TaskId} from "../plugin/taskid";
-import {TimTableComponent} from "../plugin/timTable";
+import {TimTableComponent} from "../plugin/timtable/timTable";
 import {initCssPrint} from "../printing/cssPrint";
 import {IUser, IUserListEntry} from "../user/IUser";
 import {Users} from "../user/userService";

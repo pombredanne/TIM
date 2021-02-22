@@ -50,7 +50,7 @@ import {
     TimTable,
     TimTableComponent,
     TimTableModule,
-} from "./timTable";
+} from "./timtable/timTable";
 
 const RunScriptModel = t.type({
     script: nullable(t.string),

@@ -23,7 +23,7 @@ export function staticDynamicImport(s: string) {
         case "importData":
             return import("tim/plugin/import-data.component");
         case "timTable":
-            return import("tim/plugin/timTable");
+            return import("tim/plugin/timtable/timTable");
         case "cbcountfield":
             return import("modules/fields/js/cbcountfield");
         case "timMenu":

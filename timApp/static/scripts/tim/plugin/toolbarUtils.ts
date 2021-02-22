@@ -1,5 +1,5 @@
 import {angularDialog} from "tim/ui/angulardialog/dialog.service";
-import {IToolbarTemplate, TimTableComponent} from "tim/plugin/timTable";
+import {IToolbarTemplate, TimTableComponent} from "tim/plugin/timtable/timTable";
 import type {
     ITimTableEditorToolbarParams,
     TimTableEditorToolbarDialogComponent as TimTableEditorToolbarDialogComponentType,
