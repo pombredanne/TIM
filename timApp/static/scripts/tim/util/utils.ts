@@ -945,3 +945,8 @@ export function mandatoryAndOptional<T extends Props, U extends Props>(
 ) {
     return t.intersection([t.type(mandatory), t.partial(optional)]);
 }
+
+// any[] is needed because TypeScripts doesn't understand other values in mixins:
+// https://github.com/microsoft/TypeScript/issues/37142
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Constructor<T> = new (...args: any[]) => T;

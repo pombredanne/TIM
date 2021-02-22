@@ -31,7 +31,6 @@
 // TODO: Use Angular's HTTP service instead of AngularJS $http
 
 import * as t from "io-ts";
-import {getParId} from "tim/document/parhelpers";
 import {
     AfterViewChecked,
     AfterViewInit,
@@ -52,41 +51,27 @@ import {
     ViewChild,
     ViewChildren,
 } from "@angular/core";
-import {TimUtilityModule} from "tim/ui/tim-utility.module";
-import {createDowngradedModule, doDowngrade} from "tim/downgrade";
 import {BrowserModule} from "@angular/platform-browser";
 import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {platformBrowserDynamic} from "@angular/platform-browser-dynamic";
-import {vctrlInstance} from "tim/document/viewctrlinstance";
 import {Subscription} from "rxjs";
-import {openEditorSimple} from "tim/editor/pareditorOpen";
 import angular from "angular";
+import {vctrlInstance} from "tim/document/viewctrlinstance";
+import {openEditorSimple} from "tim/editor/pareditorOpen";
+import {createDowngradedModule, doDowngrade} from "tim/downgrade";
+import {TimUtilityModule} from "tim/ui/tim-utility.module";
+import {getParId} from "tim/document/parhelpers";
 import {PurifyModule} from "tim/util/purify.module";
-import {DataViewModule} from "tim/plugin/dataview/data-view.module";
-import {
-    DataModelProvider,
-    DataViewComponent,
-    VirtualScrollingOptions,
-} from "tim/plugin/dataview/data-view.component";
-import {nullable, withDefault} from "tim/plugin/attributes";
-import {
-    handleToolbarKey,
-    hideToolbar,
-    isToolbarEnabled,
-    isToolbarOpen,
-    showTableEditorToolbar,
-} from "tim/plugin/toolbarUtils";
-import {computeHiddenRowsFromFilters} from "tim/plugin/filtering";
-import {onClick, OnClickArg} from "../document/eventhandlers";
+import {onClick, OnClickArg} from "tim/document/eventhandlers";
 import {
     ChangeType,
     FormModeOption,
     ISetAnswerResult,
     ITimComponent,
     ViewCtrl,
-} from "../document/viewctrl";
-import {ParCompiler} from "../editor/parCompiler";
+} from "tim/document/viewctrl";
+import {ParCompiler} from "tim/editor/parCompiler";
 import {
     getKeyCode,
     isArrowKey,
@@ -99,8 +84,8 @@ import {
     KEY_RIGHT,
     KEY_TAB,
     KEY_UP,
-} from "../util/keycodes";
-import {$http, $timeout} from "../util/ngimport";
+} from "tim/util/keycodes";
+import {$http, $timeout} from "tim/util/ngimport";
 import {
     clone,
     copyToClipboard,
@@ -108,11 +93,27 @@ import {
     defaultTimeout,
     maxContentOrFitContent,
     scrollToViewInsideParent,
-    StringOrNumber,
     to,
-} from "../util/utils";
-import {TaskId} from "./taskid";
-import {PluginMeta} from "./util";
+} from "tim/util/utils";
+import {ITimTableView} from "tim/plugin/timtable/data";
+import {DataViewModule} from "../dataview/data-view.module";
+import {
+    DataModelProvider,
+    DataViewComponent,
+    VirtualScrollingOptions,
+} from "../dataview/data-view.component";
+import {nullable, withDefault} from "../attributes";
+import {
+    handleToolbarKey,
+    hideToolbar,
+    isToolbarEnabled,
+    isToolbarOpen,
+    showTableEditorToolbar,
+} from "../toolbarUtils";
+import {computeHiddenRowsFromFilters} from "../filtering";
+import {TaskId} from "../taskid";
+import {PluginMeta} from "../util";
+import {WithStyleUtils} from "./styleUtils";
 
 function replaceAll(s: string, s1: string, s2: string): string {
     const re = new RegExp(s1, "g");
@@ -394,80 +395,6 @@ export interface ICell {
     [key: string]: unknown;
 }
 
-/**
- * Styles
- */
-
-const tableStyles: Set<string> = new Set<string>([
-    "backgroundColor",
-    "border",
-    "borderTop",
-    "borderBottom",
-    "borderLeft",
-    "borderRight",
-    "verticalAlign",
-    "textAlign",
-    "color",
-    "fontFamily",
-    "fontSize",
-    "visibility",
-    "width",
-]);
-
-const rowStyles: Set<string> = new Set<string>([
-    "backgroundColor",
-    "border",
-    "borderTop",
-    "borderBottom",
-    "borderLeft",
-    "borderRight",
-    "verticalAlign",
-    "textAlign",
-    "color",
-    "fontFamily",
-    "fontSize",
-    "fontWeight",
-    "height",
-]);
-
-const cellStyles: Set<string> = new Set<string>([
-    "verticalAlign",
-    "fontSize",
-    "border",
-    "borderTop",
-    "borderBottom",
-    "borderLeft",
-    "borderRight",
-    "backgroundColor",
-    "textAlign",
-    "fontFamily",
-    "color",
-    "fontWeight",
-    "width",
-    "height",
-    "colspan",
-    "rowspan",
-]);
-
-const columnStyles: Set<string> = new Set<string>([
-    "width",
-    "backgroundColor",
-    "border",
-    "borderTop",
-    "borderBottom",
-    "borderLeft",
-    "borderRight",
-]);
-
-const columnCellStyles: Set<string> = new Set<string>([
-    "fontSize",
-    "verticalAlign",
-    "textAlign",
-    "fontFamily",
-    "color",
-    "fontWeight",
-]);
-
 enum Direction {
     Up = 1,
     Down = 2,
@@ -513,8 +440,6 @@ interface ICurrentCell {
     readonly editedCellInitialContent: string;
 }
 
-const emptyStyle = {} as const;
-
 enum ChangeDetectionHint {
     DoNotTrigger,
     NeedToTrigger,
@@ -524,6 +449,13 @@ export enum ClearSort {
     Yes,
     No,
 }
+
+class TimTableBase implements ITimTableView {
+    cellDataMatrix!: ICell[][];
+    data!: TimTable;
+    rowStyleCache!: Map<number, Record<string, string>>;
+}
+const TableBase = WithStyleUtils(TimTableBase);
 
 /**
  * TimTable Angular component.
@@ -580,7 +512,7 @@ export enum ClearSort {
                         <col class="nrcolumn" *ngIf="data.nrColumn"/>
                         <col *ngIf="data.cbColumn"/>
                         <col *ngFor="let c of columns; let i = index" [span]="c.span" [id]="c.id"
-                             [ngStyle]="stylingForColumn(c, i)"/>
+                             [ngStyle]="this.stylingForColumn(c, i)"/>
                         <thead>
                         <tr *ngIf="data.charRow"> <!--Char coordinate row -->
                             <td class="nrcolumn charRow" *ngIf="data.nrColumn"></td>
@@ -706,9 +638,10 @@ export enum ClearSort {
             <pre class="error" *ngIf="error" [innerText]="error"></pre>
         </div>
     `,
-    styleUrls: ["./timTable.scss", "./table-common.scss"],
+    styleUrls: ["./timTable.scss", "../table-common.scss"],
 })
 export class TimTableComponent
+    extends TableBase
     implements
         ITimComponent,
         OnInit,
@@ -814,7 +747,7 @@ export class TimTableComponent
     private pluginMeta: PluginMeta;
     private inputSub!: Subscription;
     private customDomUpdateInProgress?: boolean;
-    private rowStyleCache = new Map<number, Record<string, string>>();
+    rowStyleCache = new Map<number, Record<string, string>>();
     private shouldSelectInputText = false;
 
     constructor(
@@ -822,6 +755,7 @@ export class TimTableComponent
         public cdr: ChangeDetectorRef,
         private zone: NgZone
     ) {
+        super();
         this.pluginMeta = new PluginMeta($(el.nativeElement));
         // if ( !this.data.hide ) this.data.hide = {};
     }
@@ -3002,345 +2936,6 @@ export class TimTableComponent
         cls += this.isActiveCell(rowi, coli) ? " activeCell" : "";
         return cls;
         //                                [class.activeCell]="isActiveCell(rowi, coli)"
-    }
-
-    /**
-     * Sets style attributes for cells
-     * @param {number} rowi Table row index
-     * @param {number} coli Table column index
-     */
-    stylingForCell(rowi: number, coli: number) {
-        const sc = this.cellDataMatrix[rowi][coli].styleCache;
-        if (sc !== undefined) {
-            return sc;
-        }
-        const styles = this.stylingForCellOfColumn(coli);
-
-        if (this.getCellContentString(rowi, coli) === "") {
-            styles.height = "2em";
-            styles.width = "1.5em";
-        }
-
-        const def = this.data.table.defcells;
-        if (def) {
-            this.cellDataMatrix[rowi][coli].class = this.applyStyle(
-                styles,
-                def,
-                cellStyles
-            );
-        }
-
-        const defrange = this.data.table.defcellsrange;
-        if (defrange) {
-            const rown = this.cellDataMatrix.length;
-            const coln = this.cellDataMatrix[0].length;
-            for (const dr of defrange) {
-                const r = dr.validrange ?? this.checkRange(dr.range);
-                dr.validrange = r;
-                if (this.checkIndex2(r, rown, coln, rowi, coli)) {
-                    this.applyStyle(styles, dr.def, columnStyles);
-                }
-            }
-        }
-
-        const cell = this.cellDataMatrix[rowi][coli];
-
-        this.cellDataMatrix[rowi][coli].class = this.applyStyle(
-            styles,
-            cell,
-            cellStyles
-        );
-
-        if (this.data.maxWidth) {
-            styles["max-width"] = this.data.maxWidth;
-            styles.overflow = "hidden";
-        }
-        if (this.data.minWidth) {
-            styles["min-width"] = this.data.minWidth;
-        }
-        if (this.data.singleLine) {
-            styles["white-space"] = "nowrap";
-        }
-        cell.styleCache = styles;
-        return styles;
-    }
-
-    /**
-     * Parses cell style attributes for a column
-     * @param {number} coli The index of the column
-     */
-    private stylingForCellOfColumn(coli: number) {
-        const styles: Record<string, string> = {};
-        const table = this.data.table;
-
-        if (!table.columns) {
-            return styles;
-        }
-
-        if (table.columns.length <= coli) {
-            return styles;
-        }
-
-        const col = table.columns[coli];
-
-        if (!col) {
-            return styles;
-        }
-
-        this.applyStyle(styles, col, columnCellStyles);
-        return styles;
-    }
-
-    /**
-     * Makex r[i] to index if possible, otherwise return def
-     * @param r ange to check
-     * @param i index to take from r
-     * @param n max value
-     * @param def in case no item
-     */
-    private static toIndex(
-        r: readonly number[],
-        i: number,
-        n: number,
-        def: number
-    ) {
-        if (r.length <= i) {
-            return def;
-        }
-        let idx = r[i];
-        if (idx < 0) {
-            idx = n + idx;
-        }
-        if (idx < 0) {
-            idx = 0;
-        }
-        if (idx >= n) {
-            idx = n - 1;
-        }
-        return idx;
-    }
-
-    // noinspection JSMethodCanBeStatic
-    /**
-     * Checks if dr.range is valid range.  If it is string, change it to array.
-     * To prevent another check, mark it checked.
-     * @param dr default range to check
-     */
-    private checkRange(
-        dr: readonly number[] | number | string | undefined
-    ): readonly number[] | undefined {
-        const r = dr;
-        if (!r) {
-            return;
-        }
-        if (typeof r === "number") {
-            return [r];
-        }
-        if (typeof r !== "string") {
-            return r;
-        }
-
-        const json = "[" + r.replace("[", "").replace("]", "") + "]";
-        try {
-            const parsed = JSON.parse(json);
-            if (t.array(t.number).is(parsed)) {
-                return parsed;
-            } else {
-                return [];
-            }
-        } catch (e) {
-            return [];
-        }
-    }
-
-    // noinspection JSMethodCanBeStatic
-    /**
-     * Check if index is between r[0]-r[1] where negative means i steps backward
-     * @param r range to check, may be like [1,-1]
-     * @param rown max_value
-     * @param coln max_value
-     * @param rowi index to check
-     * @param coli index to check
-     */
-    private checkIndex2(
-        r: readonly number[] | undefined,
-        rown: number,
-        coln: number,
-        rowi: number,
-        coli: number
-    ): boolean {
-        if (!r) {
-            return false;
-        }
-        if (r.length == 0) {
-            return false;
-        }
-        const ir1 = TimTableComponent.toIndex(r, 0, rown, 0);
-        if (rowi < ir1) {
-            return false;
-        }
-        const ic1 = TimTableComponent.toIndex(r, 1, coln, 0);
-        if (coli < ic1) {
-            return false;
-        }
-        const ir2 = TimTableComponent.toIndex(r, 2, rown, ir1);
-        if (ir2 < rowi) {
-            return false;
-        }
-        const ic2 = TimTableComponent.toIndex(r, 3, coln, ic1);
-        return ic2 >= coli;
-    }
-
-    // noinspection JSMethodCanBeStatic
-    /**
-     * Check if index is between r[0]-r[1] where negative means i steps backward
-     * @param r range to check, may be like [1,-1]
-     * @param n max_value
-     * @param index index to check
-     */
-    private checkIndex(
-        r: readonly number[] | undefined,
-        n: number,
-        index: number
-    ): boolean {
-        if (!r) {
-            return false;
-        }
-        if (r.length == 0) {
-            return false;
-        }
-        const i1 = TimTableComponent.toIndex(r, 0, n, 0);
-        if (index < i1) {
-            return false;
-        }
-        const i2 = TimTableComponent.toIndex(r, 1, n, i1);
-        return i2 >= index;
-    }
-
-    /**
-     * Sets style attributes for columns
-     * @param {IColumn} col The column to be styled
-     * @param index col index
-     */
-    stylingForColumn(col: IColumn, index: number) {
-        /*
-        if (this.data.nrColumn) {
-            index--;
-            if (index < 0) { return; }
-        }
-        */
-
-        const styles: Record<string, string> = {};
-
-        const def = this.data.table.defcols;
-        if (def) {
-            this.applyStyle(styles, def, columnStyles);
-        }
-
-        const defrange = this.data.table.defcolsrange;
-        if (defrange) {
-            const n = this.cellDataMatrix[0].length;
-            for (const dr of defrange) {
-                const r = dr.validrange ?? this.checkRange(dr.range);
-                dr.validrange = r;
-                if (this.checkIndex(r, n, index)) {
-                    this.applyStyle(styles, dr.def, columnStyles);
-                }
-            }
-        }
-
-        this.applyStyle(styles, col, columnStyles);
-        return styles;
-    }
-
-    /**
-     * Sets style attributes for rows
-     * @param {IRow} rowi The row to be styled
-     */
-    stylingForRow(rowi: number) {
-        if (!this.data.table) {
-            return emptyStyle;
-        }
-        const cached = this.rowStyleCache.get(rowi);
-        if (cached) {
-            return cached;
-        }
-        const styles: Record<string, string> = {};
-
-        const def = this.data.table.defrows;
-        if (def) {
-            this.applyStyle(styles, def, rowStyles);
-        }
-        const defrange = this.data.table.defrowsrange;
-        if (defrange) {
-            // todo: do all this on init
-            const n = this.cellDataMatrix.length;
-            for (const dr of defrange) {
-                const r = dr.validrange ?? this.checkRange(dr.range);
-                dr.validrange = r;
-                if (this.checkIndex(r, n, rowi)) {
-                    this.applyStyle(styles, dr.def, rowStyles);
-                }
-            }
-        }
-
-        if (!this.data.table.rows || rowi >= this.data.table.rows.length) {
-            return styles;
-        }
-
-        const row = this.data.table.rows[rowi];
-        this.applyStyle(styles, row, rowStyles);
-        this.rowStyleCache.set(rowi, styles);
-        return styles;
-    }
-
-    /**
-     * Sets style attributes for the whole table
-     * @returns {{[p: string]: string}}
-     */
-    stylingForTable(tab: ITable) {
-        const styles: Record<string, string> = {};
-        this.applyStyle(styles, tab, tableStyles);
-        return styles;
-    }
-
-    // noinspection JSMethodCanBeStatic
-    /**
-     * Generic function for setting style attributes.
-     * Verifies that given style attributes are valid and applies them.
-     * Non-valid style attributes are not applied.
-     * @param styles The dictionary that will contain the final object styles
-     * @param object The object that contains the user-given style attributes
-     * @param validAttrs A set that contains the accepted style attributes
-     * @return posible class
-     */
-    private applyStyle(
-        styles: Record<string, string | number>,
-        object: Record<string, unknown> | undefined,
-        validAttrs: Set<string>
-    ): string {
-        if (!object) {
-            return "";
-        }
-        let cls: string = "";
-        for (const [key, value] of Object.entries(object)) {
-            // At least fontSize needs to be a number, so we accept numbers too.
-            if (key === "class") {
-                cls = String(value);
-                continue;
-            }
-            if (!validAttrs.has(key) || !StringOrNumber.is(value)) {
-                continue;
-            }
-
-            const property = styleToHtml[key];
-            if (!property) {
-                continue;
-            }
-
-            styles[property] = value;
-        }
-        return cls;
     }
 
     /**
