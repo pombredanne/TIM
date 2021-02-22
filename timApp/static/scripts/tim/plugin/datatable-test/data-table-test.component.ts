@@ -10,9 +10,10 @@ type TableData = TimTable;
     selector: "tim-data-table-test",
     template: `
         <div>
-            <ngx-datatable [rows]="rows" [scrollbarV]="true" columnMode="force" [rowHeight]="30" [footerHeight]="0"
+            <ngx-datatable [rows]="rows" [scrollbarV]="true" columnMode="standard" [rowHeight]="30" [footerHeight]="0"
                            [headerHeight]="30">
                 <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop"
+                                      [width]="300"
                                       [headerTemplate]="hdrCell" [cellTemplate]="mainCell"
                                       [canAutoResize]="true"></ngx-datatable-column>
             </ngx-datatable>
