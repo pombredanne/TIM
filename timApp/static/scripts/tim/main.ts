@@ -21,7 +21,12 @@ import {BootstrapPanelComponent} from "tim/ui/bootstrap-panel.component";
 import {LogoComponent} from "tim/ui/logo.component";
 import {LoginMenuComponent} from "tim/user/login-menu.component";
 import * as timRoot from "tim/timRoot";
-import {markAsUsed, ModuleArray, StringArray} from "tim/util/utils";
+import {
+    getHistoryState,
+    markAsUsed,
+    ModuleArray,
+    StringArray,
+} from "tim/util/utils";
 import {AnnotationComponent} from "tim/velp/annotation.component";
 import * as velpSelection from "tim/velp/velpSelection";
 import {staticDynamicImport} from "tim/staticDynamicImport";
@@ -61,6 +66,9 @@ import {CopyFolderComponent} from "tim/folder/copy-folder.component";
 import {insertLogDivIfEnabled, timLogInit, timLogTime} from "./util/timTiming";
 import {genericglobals} from "./util/globals";
 import {ParCompiler} from "./editor/parCompiler";
+
+// Capture current location hash before processing anything else to ensure it's not changed by user scrolling while loading
+const locationHash = getHistoryState()?.hash ?? location.hash;
 
 BackspaceDisabler.disable();
 
@@ -182,13 +190,15 @@ $(async () => {
 
     // For some reason, anchor link in URL doesn't work when loading a page for the first time.
     // This is a workaround for it.
-    if (location.hash && !location.hash.includes("/")) {
+    console.log(`Current location hash: ${locationHash}`);
+    if (locationHash && !location.hash.includes("/")) {
         try {
-            const id = decodeURIComponent(location.hash).slice(1);
+            const id = decodeURIComponent(locationHash).slice(1);
 
             // Don't use jQuery selector here because id would have to be escaped
             // and then jQuery would have to be updated to get escapeSelector method.
             const element = document.getElementById(id);
+            console.log(`Scrolling into ${id}`, element);
             if (element) {
                 // Both with and without setTimeout are needed to get smooth experience.
                 // Firefox and Chrome behave slightly differently.

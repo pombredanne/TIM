@@ -7,7 +7,7 @@ import {DerefOption} from "tim/document/structure/derefOption";
 import {getParContainerElem} from "tim/document/structure/create";
 import {IItem} from "../item/IItem";
 import {RightNames} from "../user/IRights";
-import {isInViewport} from "../util/utils";
+import {getHistoryState, isInViewport} from "../util/utils";
 
 export function getElementByParId(id: string) {
     return $("#" + id);
@@ -47,6 +47,7 @@ export const EDITOR_CLASS_DOT = "." + EDITOR_CLASS;
  * come back there when returning to the document.
  */
 export function saveCurrentScreenPar() {
+    console.log(window.history.state);
     if (!getParContainerElem()) {
         return;
     }
@@ -70,9 +71,12 @@ export function saveCurrentScreenPar() {
         if (hash == null) {
             hash = "";
         }
-        if (location.hash !== hash) {
-            const url = `${location.protocol}//${location.host}${location.pathname}${location.search}${hash}`;
-            window.history.replaceState(undefined, document.title, url);
+        const historyState = getHistoryState();
+        const parHash = historyState?.hash ?? "";
+        console.log(`Cur: ${hash}, new: ${hash}`);
+        if (parHash !== hash) {
+            // const url = `${location.protocol}//${location.host}${location.pathname}${location.search}`;
+            window.history.replaceState({hash}, document.title);
         }
     }
 }

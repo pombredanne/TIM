@@ -104,6 +104,9 @@ export function isInViewport(el: Element) {
     if (!document.documentElement) {
         return true;
     }
+    if (rect.width == 0 && rect.height == 0 && rect.x == 0 && rect.y == 0) {
+        return false;
+    }
     return (
         rect.top >= 0 &&
         rect.left >= 0 &&
@@ -991,3 +994,16 @@ export const MomentFromString = new t.Type<moment.Moment, string, unknown>(
         }),
     (a) => a.toISOString()
 );
+
+const HistoryState = t.type({
+    hash: t.string,
+});
+
+export function getHistoryState() {
+    const r = HistoryState.decode(window.history.state);
+    if (isLeft(r)) {
+        console.log(r.left);
+        return undefined;
+    }
+    return r.right;
+}
