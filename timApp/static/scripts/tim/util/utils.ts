@@ -104,17 +104,26 @@ export function isInViewport(el: Element) {
     if (!document.documentElement) {
         return true;
     }
+    // Some elements are not visible
     if (rect.width == 0 && rect.height == 0 && rect.x == 0 && rect.y == 0) {
         return false;
     }
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-            (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-            (window.innerWidth || document.documentElement.clientWidth)
-    );
+    const h = window.innerHeight || document.documentElement.clientHeight;
+    const w = window.innerWidth || document.documentElement.clientWidth;
+
+    const fullyInside =
+        rect.top >= 0 && rect.left >= 0 && rect.bottom <= h && rect.right <= w;
+    if (fullyInside) {
+        return true;
+    }
+
+    const overflows =
+        (rect.top <= 0 && rect.bottom >= h) ||
+        (rect.left <= 0 && rect.right >= h);
+    if (overflows) {
+        return true;
+    }
+    return false;
 }
 
 /**
