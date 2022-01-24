@@ -137,6 +137,7 @@ export class PluginLoaderCtrl extends DestroyScope implements IController {
     private running = false;
     private endTime?: ReadonlyMoment;
     private taskHidden = false;
+    private isTeacher = false;
 
     constructor(
         private element: JQLite,
@@ -181,18 +182,22 @@ export class PluginLoaderCtrl extends DestroyScope implements IController {
 
         this.showPlaceholder = !this.isInFormMode() && !this.hideBrowser;
 
-        if (this.accessDuration && !this.viewctrl?.item.rights.teacher) {
+        if (this.accessDuration) {
             this.timed = true;
-            if (!this.accessEnd) {
-                this.unlockable = true;
-                this.hidePlugin();
-            } else {
-                this.endTime = moment(this.accessEnd);
-                if (this.endTime.isBefore(moment.now())) {
-                    this.expireTask();
+            if (!this.viewctrl?.item.rights.teacher) {
+                if (!this.accessEnd) {
+                    this.unlockable = true;
+                    this.hidePlugin();
                 } else {
-                    this.startTask();
+                    this.endTime = moment(this.accessEnd);
+                    if (this.endTime.isBefore(moment.now())) {
+                        this.expireTask();
+                    } else {
+                        this.startTask();
+                    }
                 }
+            } else {
+                this.isTeacher = true;
             }
         }
     }
@@ -343,6 +348,12 @@ export class PluginLoaderCtrl extends DestroyScope implements IController {
         }
     }
 
+    dimPlugindbg() {
+        const e = this.getPluginElement();
+        e.css("opacity", "0.3");
+        e.addClass("hidden-print");
+    }
+
     hidePlugin() {
         this.taskHidden = true;
         const e = this.getPluginElement();
@@ -351,26 +362,55 @@ export class PluginLoaderCtrl extends DestroyScope implements IController {
 
     unHidePlugin() {
         this.taskHidden = false;
-
         const e = this.getPluginElement();
         e.css("visibility", "visible");
     }
 
+    getPar() {
+        const parEl = this.element.parents(".par")[0];
+        const ctx = tryCreateParContextOrHelp(parEl);
+        if (ctx instanceof ParContext) {
+            return ctx;
+        }
+        return undefined;
+    }
+
     async unlockTask() {
+        const par = this.getPar();
+        if (!par) {
+            return;
+        }
+        const orig = par.originalPar;
+        const parParams = {
+            doc_id: par.par.docId,
+            par_id: par.par.id,
+            ref_from_doc_id: orig.docId,
+            ref_from_par_id: orig.id,
+        };
+
         const r = await to(
-            $http.get<{end_time: string; expired?: boolean}>("/unlockTask", {
+            $http.get<{end_time: string; html: string}>("/unlockTask", {
                 params: {
+                    ...parParams,
                     task_id: this.taskId,
                 },
             })
         );
-        if (r.ok) {
+        console.log(r);
+        if (r.ok && this.viewctrl) {
             this.unlockable = false;
             this.endTime = moment(r.result.data.end_time);
+
             if (this.endTime.isBefore(moment.now())) {
                 this.expireTask();
             } else {
                 this.startTask();
+                await loadPlugin(
+                    r.result.data.html,
+                    this.getPluginElement(),
+                    this.scope,
+                    this.viewctrl
+                );
             }
         }
     }
@@ -380,6 +420,8 @@ export class PluginLoaderCtrl extends DestroyScope implements IController {
         this.running = false;
         if (this.accessEndText) {
             this.hidePlugin();
+        } else {
+            this.dimPlugindbg();
         }
     }
 
@@ -432,18 +474,23 @@ timApp.component("timPluginLoader", {
                answer-id="$ctrl.answerId">
 </answerbrowser>
 <div ng-if="$ctrl.timed">
-    <div ng-if="$ctrl.running">
-    Time left: <tim-countdown [end-time]="$ctrl.endTime" (on-finish)="$ctrl.expireTask()"></tim-countdown>
+    <div ng-if="$ctrl.isTeacher">
+    Users will have {{$ctrl.accessDuration}} seconds to answer to this task after they unlock the task.
     </div>
-    <div ng-if="$ctrl.expired">
-    Your access to this task has expired
+    <div ng-if="!$ctrl.isTeacher">
+        <div ng-if="$ctrl.running">
+        Time left: <tim-countdown [end-time]="$ctrl.endTime" (on-finish)="$ctrl.expireTask()"></tim-countdown>
+        </div>
+        <div ng-if="$ctrl.expired">
+        Your access to this task has expired
+        </div>
+        <h4 ng-if="$ctrl.accessHeader && $ctrl.taskHidden">{{::$ctrl.accessHeader}}</h4>
+        <div ng-if="$ctrl.unlockable">
+        Unlock task. You will have {{$ctrl.accessDuration}} seconds to answer to this task.
+        <button class="btn btn-primary" ng-click="$ctrl.unlockTask()" title="Unlock task">Unlock task</button>
+        </div>
+        <div ng-if="$ctrl.expired && $ctrl.accessEndText">{{::$ctrl.accessEndText}}</div>
     </div>
-    <h4 ng-if="$ctrl.accessHeader && $ctrl.taskHidden">{{::$ctrl.accessHeader}}</h4>
-    <div ng-if="$ctrl.unlockable">
-    Unlock task. You will have {{$ctrl.accessDuration}} seconds to answer to this task.
-    <button class="btn btn-primary" ng-click="$ctrl.unlockTask()" title="Unlock task">Unlock task</button>
-    </div>
-    <div ng-if="$ctrl.expired && $ctrl.accessEndText">{{::$ctrl.accessEndText}}</div>
 </div>
     `,
     transclude: true,

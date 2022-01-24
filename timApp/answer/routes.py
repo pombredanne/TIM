@@ -2260,12 +2260,27 @@ def rename_answers(old_name: str, new_name: str, doc_path: str):
 
 
 @answers.get("/unlockTask")
-def unlock_task(task_id: str):
+def unlock_task(
+    task_id: str,
+    # user_id: int,
+    # answer_id: Optional[int] = None,
+    par_id: Optional[str] = None,
+    # doc_id: Optional[int] = None,
+    # review: bool = False,
+    # answernr: Optional[int] = None,
+    # ask_new: Optional[bool] = False,
+):
+    answer = None
     tid = TaskId.parse(task_id)
     d = get_doc_or_abort(tid.doc_id)
     verify_view_access(d)
     doc = d.document
     current_user = get_current_user_object()
+
+    doc.insert_preamble_pars()
+    if par_id:
+        tid.maybe_set_hint(par_id)
+
     view_ctx = ViewContext(ViewRoute.View, False, origin=get_origin_from_request())
     user_ctx = user_context_with_logged_in(current_user)
     try:
@@ -2300,4 +2315,25 @@ def unlock_task(task_id: str):
         db.session.commit()
     else:
         expire_time = ba.accessible_to
-    return json_response({"end_time": expire_time})
+    plug.access_end_for_user = expire_time
+    if not plug.is_timed_task_visible(current_user):
+        raise RouteException("Your access to this task has expired")
+    block = plug.par
+
+    def deref():
+        return dereference_pars([block], context_doc=doc, view_ctx=view_ctx)
+
+    presult = pluginify(
+        doc,
+        deref(),
+        user_ctx,
+        view_ctx,
+        custom_answer=answer,
+        task_id=task_id,
+        do_lazy=NEVERLAZY,
+        pluginwrap=PluginWrap.Nothing,
+    )
+    plug = presult.custom_answer_plugin
+    html = plug.get_final_output()
+
+    return json_response({"html": html, "end_time": expire_time})

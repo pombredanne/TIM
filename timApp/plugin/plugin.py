@@ -591,6 +591,19 @@ class Plugin:
                     return
                 self.access_end_for_user = ba.accessible_to
 
+    def is_timed_task_visible(self, user: Optional[User] = None) -> bool:
+        current_user = user if user else self.options.user_ctx.logged_user
+        if not current_user.has_teacher_access(self.par.doc.get_docinfo()):
+            if self.access_end_for_user:
+                if (
+                    self.access_end_for_user < get_current_time()
+                    and self.known.accessEndText
+                ):
+                    return False
+            else:
+                return False
+        return True
+
     def get_final_output(self):
         out = self.output
         if self.is_lazy() and out.find(LAZYSTART) < 0:
@@ -618,17 +631,20 @@ class Plugin:
         )
         doc_task_id = self.task_id.doc_task_with_field if self.task_id else None
         tag = self.get_wrapper_tag()
+        access_end = None
+        if self.is_timed():
+            self.set_access_end_for_user()
+            if self.access_end_for_user:
+                access_end = self.access_end_for_user.isoformat()
+            if not self.is_timed_task_visible():
+                out = ""
         if self.options.wraptype != PluginWrap.Nothing:
             abtype = self.get_answerbrowser_type()
-            cont = f"""<{tag} id='{html_task_id}' data-plugin='/{self.type}' {style}>{out}</{tag}>""".strip()
             unlock_info = None
             if self.is_timed():
-                self.set_access_end_for_user()
-                access_end = None
-                if self.access_end_for_user:
-                    access_end = self.access_end_for_user.isoformat()
                 unlock_info = f"""access-duration='{self.known.accessDuration}' access-end="{access_end or ""}" 
                 access-header='{self.known.header or ""}' access-end-text='{self.known.accessEndText or ''}'"""
+            cont = f"""<{tag} id='{html_task_id}' data-plugin='/{self.type}' {style}>{out}</{tag}>""".strip()
             if abtype and self.options.wraptype == PluginWrap.Full and False:
                 return (
                     f"""
